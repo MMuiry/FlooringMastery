@@ -17,6 +17,12 @@ public class Order {
     private BigDecimal tax;
     private BigDecimal total;
 
+    public Order(String customerName, String state, String productType, BigDecimal area) {
+        this.customerName = customerName;
+        this.state = state;
+        this.productType = productType;
+        this.area = area;
+    }
     //setters
     public void setCustomerName(String customerName) {
         this.customerName = customerName;

@@ -21,6 +21,7 @@ public class Tax {
         return taxRate;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
