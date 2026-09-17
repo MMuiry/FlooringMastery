@@ -1,4 +1,4 @@
 package com.mthree.floorMastery.dao;
 
-public interface FlooringMasterDao {
+public interface FlooringMasterTaxDao {
 }
