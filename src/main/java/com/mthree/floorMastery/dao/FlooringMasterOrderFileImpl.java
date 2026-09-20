@@ -1,5 +1,7 @@
 package com.mthree.floorMastery.dao;
 
+import com.mthree.floorMastery.exceptions.NoSuchOrderException;
+import com.mthree.floorMastery.exceptions.PersistenceException;
 import com.mthree.floorMastery.model.Order;
 import com.mthree.floorMastery.model.Product;
 
@@ -16,15 +18,26 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
     String DELIMITER = "||";
     @Override
 
-    public void writeToFile() throws IOException {
+    public void writeToFile() throws PersistenceException {
         File ordersDir = new File("Orders");
+
         if (!ordersDir.exists()) {
             ordersDir.mkdirs();
         }
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMddyyyy");
         final String ORDER_FILE = "Orders/Orders_" + currentLoadedDate.format(formatter) + ".txt";
-        PrintWriter out = new PrintWriter(new FileWriter(ORDER_FILE));
+        PrintWriter out;
+
+        try {
+            out = new PrintWriter(new FileWriter(ORDER_FILE));
+        } catch (IOException e) {
+            throw new PersistenceException("Could not save Order data", e);
+        }
+
         String currentLine;
+        out.println("OrderNumber||CustomerName||State||TaxRate||ProductType||Area||CostPerSquareFoot||LaborCostPerSquareFoot||MaterialCost||LaborCost||Tax||Total");
+
         for (Order o: orders.values()) {
             currentLine = o.getOrderNumber() + "||" + o.getCustomerName() + "||"
                     + o.getState() + "||" + o.getTaxRate() + "||"
@@ -34,11 +47,12 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
                     + o.getTax() + "||" + o.getTotal();
                     out.println(currentLine);
         }
+
         out.close();
     }
 
     @Override
-    public void loadFromFile() throws FileNotFoundException {
+    public void loadFromFile() throws PersistenceException {
         orders = new TreeMap<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMddyyyy");
         final File ORDER_FILE = new File("Orders/Orders_" + currentLoadedDate.format(formatter) + ".txt");
@@ -47,7 +61,14 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
             return;
         }
 
-        Scanner sc = new Scanner(new BufferedReader(new FileReader(ORDER_FILE)));
+        Scanner sc;
+
+        try {
+            sc = new Scanner(new BufferedReader(new FileReader(ORDER_FILE)));
+        } catch (FileNotFoundException e) {
+            throw new PersistenceException("Could not Load file in", e);
+        }
+
         Integer orderNumber;
         String customerName;
         String state;
@@ -61,6 +82,10 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
         BigDecimal tax;
         BigDecimal total;
         String[] orderInfo;
+
+        if  (sc.hasNextLine()) {
+            sc.nextLine();
+        }
 
         while (sc.hasNextLine()) {
             orderInfo = sc.nextLine().split(Pattern.quote(DELIMITER));            orderNumber = Integer.parseInt(orderInfo[0]);
@@ -81,11 +106,13 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
                     materialCost, laborCost, tax, total);
             orders.put(orderNumber, currentOrder);
         }
+
         sc.close();
     }
 
     @Override
-    public int getNextOrderNumber() throws FileNotFoundException {
+    public int getNextOrderNumber(){
+
         if (orders.isEmpty()) {
             return 1;
         }
@@ -95,7 +122,7 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
     }
 
     @Override
-    public Order addOrder(LocalDate date, Order newOrder) throws IOException {
+    public Order addOrder(LocalDate date, Order newOrder) throws PersistenceException {
         currentLoadedDate = date;
         loadFromFile();
         int nextOrderNumber = getNextOrderNumber();
@@ -106,27 +133,36 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
     }
 
     @Override
-    public Order getOrder(LocalDate date, int orderNumber) throws FileNotFoundException {
+    public Order getOrder(LocalDate date, int orderNumber) throws NoSuchOrderException, PersistenceException {
         currentLoadedDate = date;
         loadFromFile();
         Order foundOrder = orders.get(orderNumber);
+
+        if (foundOrder == null) {
+            throw new NoSuchOrderException("No order found with order number " + orderNumber + " on date " + date);
+        }
+
         return foundOrder;
     }
 
     @Override
-    public Order editOrder(LocalDate date, int orderNumber, Order modifiedOrder) throws IOException {
+    public Order editOrder(LocalDate date, int orderNumber, Order modifiedOrder) throws PersistenceException {
         currentLoadedDate = date;
         loadFromFile();
         Order foundOrder = getOrder(date, orderNumber);
+
         if  (modifiedOrder.getCustomerName() != null) {
             foundOrder.setCustomerName(modifiedOrder.getCustomerName());
         }
+
         if   (modifiedOrder.getState() != null) {
             foundOrder.setState(modifiedOrder.getState());
         }
+
         if   (modifiedOrder.getProductType() != null) {
             foundOrder.setProductType(modifiedOrder.getProductType());
         }
+
         if   (modifiedOrder.getArea() != null) {
             foundOrder.setArea(modifiedOrder.getArea());
         }
@@ -136,17 +172,22 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
     }
 
     @Override
-    public Order removeOrder(LocalDate date, int orderNumber) throws IOException {
+    public Order removeOrder(LocalDate date, int orderNumber) throws NoSuchOrderException, PersistenceException {
         currentLoadedDate = date;
         loadFromFile();
         Order foundOrder = orders.get(orderNumber);
+
+        if  (foundOrder == null) {
+            throw new NoSuchOrderException("No order found with order number " + orderNumber);
+        }
+
         orders.remove(orderNumber);
         writeToFile();
         return foundOrder;
     }
 
     @Override
-    public List<Order> getOrders(LocalDate date) throws FileNotFoundException {
+    public List<Order> getOrders(LocalDate date) throws PersistenceException {
         currentLoadedDate = date;
         loadFromFile();
         return new ArrayList<>(orders.values());

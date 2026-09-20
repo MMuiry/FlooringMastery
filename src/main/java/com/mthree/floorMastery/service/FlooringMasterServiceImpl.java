@@ -4,6 +4,7 @@ import com.mthree.floorMastery.dao.FlooringMasterExportDao;
 import com.mthree.floorMastery.dao.FlooringMasterOrderDao;
 import com.mthree.floorMastery.dao.FlooringMasterProductDao;
 import com.mthree.floorMastery.dao.FlooringMasterTaxDao;
+import com.mthree.floorMastery.exceptions.PersistenceException;
 import com.mthree.floorMastery.model.Order;
 import com.mthree.floorMastery.model.Product;
 import com.mthree.floorMastery.model.Tax;
@@ -30,7 +31,7 @@ public class FlooringMasterServiceImpl implements FlooringMasterService {
 
 
     @Override
-    public Order addOrder(LocalDate orderDate, Order order) throws IOException {
+    public Order addOrder(LocalDate orderDate, Order order) throws PersistenceException {
         Product product = getProducts().stream()
                 .filter(p -> p.getProductType().equalsIgnoreCase(order.getProductType()))
                 .findFirst()
@@ -58,38 +59,38 @@ public class FlooringMasterServiceImpl implements FlooringMasterService {
     }
 
     @Override
-    public Order getOrder(LocalDate dateOfOrder, int orderNumber) throws FileNotFoundException {
+    public Order getOrder(LocalDate dateOfOrder, int orderNumber) throws PersistenceException {
        return orderDao.getOrder(dateOfOrder, orderNumber);
     }
 
     @Override
-    public Order editOrder(LocalDate dateOfOrder, int orderNumber, Order modifiedOrder) throws IOException {
+    public Order editOrder(LocalDate dateOfOrder, int orderNumber, Order modifiedOrder) throws PersistenceException {
         return orderDao.editOrder(dateOfOrder, orderNumber, modifiedOrder);
     }
 
     @Override
-    public List<Order> getOrderForDate(LocalDate dateOfOrder) throws FileNotFoundException {
+    public List<Order> getOrderForDate(LocalDate dateOfOrder) throws PersistenceException {
         return new ArrayList<>(orderDao.getOrders(dateOfOrder));
     }
 
     @Override
-    public Order removeOrder(LocalDate dateOfOrder, int orderNumber) throws IOException {
+    public Order removeOrder(LocalDate dateOfOrder, int orderNumber) throws PersistenceException {
         return orderDao.removeOrder(dateOfOrder, orderNumber);
     }
 
     @Override
-    public void exportData() {
-        //To Implement
+    public void exportAllData() throws PersistenceException {
+        exportDao.export();
     }
 
     @Override
-    public List<Tax> getTaxes() throws FileNotFoundException {
+    public List<Tax> getTaxes() throws PersistenceException {
         taxDao.loadFile();
         return new ArrayList<>(taxDao.getAllTaxes());
     }
 
     @Override
-    public List<Product> getProducts() throws FileNotFoundException {
+    public List<Product> getProducts() throws PersistenceException {
         productDao.loadFile();
         return new ArrayList<>(productDao.getAllProducts());
     }

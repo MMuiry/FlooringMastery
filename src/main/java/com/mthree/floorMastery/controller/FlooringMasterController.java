@@ -1,6 +1,7 @@
 package com.mthree.floorMastery.controller;
 
-import com.mthree.floorMastery.dao.PersistenceException;
+import com.mthree.floorMastery.exceptions.NoSuchOrderException;
+import com.mthree.floorMastery.exceptions.PersistenceException;
 import com.mthree.floorMastery.model.Order;
 import com.mthree.floorMastery.service.FlooringMasterService;
 import com.mthree.floorMastery.ui.FlooringMasterView;
@@ -51,10 +52,8 @@ public class FlooringMasterController {
             }
 
             exitMessage();
-        } catch (PersistenceException | FileNotFoundException e) {
+        } catch (PersistenceException | NoSuchOrderException e) {
             view.displayErrorMessage(e.getMessage());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -63,43 +62,55 @@ public class FlooringMasterController {
         return selection;
     }
 
-    private void displayOrders() throws FileNotFoundException {
+    private void displayOrders() throws PersistenceException {
         view.displayOrderBanner();
-        List<Order> orders = service.getOrderForDate(view.getDateInput());
+        List<Order> orders = service.getOrderForDate(view.getDateInput(false));
         view.displayOrders(orders);
     }
 
-    private void addOrders() throws PersistenceException, IOException {
+    private void addOrders() throws PersistenceException {
         view.displayAddOrderBanner();
-        LocalDate date = view.getDateInput();
+        LocalDate date = view.getDateInput(true);
         Order newOrder = view.getAddOrderInput(service.getTaxes(), service.getProducts());
-        service.addOrder(date, newOrder);
+        boolean usrConfirmation = view.getConfirmation();
+        if  (usrConfirmation) {
+            service.addOrder(date, newOrder);
+            view.displayAddOrderSuccess();
+        }
     }
 
-    private void editOrder() throws PersistenceException, FileNotFoundException {
+    private void editOrder() throws PersistenceException {
         view.displayEditOrderBanner();
-        Order orderToEdit = service.getOrder(view.getDateInput(),view.getOrderNumberInput());
+        LocalDate  date = view.getDateInput(false);
+        int orderNumber = view.getOrderNumberInput();
+        Order orderToEdit = service.getOrder(date, orderNumber);
         view.displayOrderInfo(orderToEdit);
-        if  (orderToEdit != null) {
-            orderToEdit = service.getOrder(view.getDateInput(), view.getOrderNumberInput());
+        Order updatedorder = view.getEditOrderInput(service.getTaxes(),service.getProducts());
+        boolean usrConfirmed = view.getConfirmation();
+        if  (usrConfirmed) {
+            orderToEdit = service.editOrder(date, orderNumber, updatedorder);
             view.displayEditOrderSuccess();
         }
     }
 
-    private void removeOrders() throws PersistenceException, IOException {
+    private void removeOrders() throws PersistenceException {
         view.displayRemoveOrderBanner();
-        Order removedOrder = service.removeOrder(view.getDateInput(), view.getOrderNumberInput());
+        LocalDate date = view.getDateInput(false);
+        int orderNumber = view.getOrderNumberInput();
+        Order orderToRemove = service.getOrder(date,orderNumber);
+        boolean usrConfirmed = view.getConfirmation();
+        if (usrConfirmed) {
+        Order removedOrder = service.removeOrder(date, orderNumber);
+        view.displayRemoveOrderSuccess(removedOrder);
+        }
     }
 
     private void exportAllData() throws PersistenceException {
-        service.exportData();
+        service.exportAllData();
     }
 
     private void exitMessage() {
         view.displayExitMessage();
     }
 
-    private void unknownCommand() {
-        view.getDisplayUnknownCommandMessage();
-    }
 }

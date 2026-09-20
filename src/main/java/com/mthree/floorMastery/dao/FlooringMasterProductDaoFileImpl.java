@@ -1,5 +1,6 @@
 package com.mthree.floorMastery.dao;
 
+import com.mthree.floorMastery.exceptions.PersistenceException;
 import com.mthree.floorMastery.model.Product;
 
 import java.io.BufferedReader;
@@ -14,8 +15,13 @@ public class FlooringMasterProductDaoFileImpl implements FlooringMasterProductDa
     final String DELIMITER = ",";
 
     @Override
-    public void loadFile() throws FileNotFoundException {
-        Scanner sc = new Scanner(new BufferedReader(new FileReader(PRODUCT_FILE)));
+    public void loadFile() throws PersistenceException {
+        Scanner sc;
+        try {
+            sc = new Scanner(new BufferedReader(new FileReader(PRODUCT_FILE)));
+        } catch (FileNotFoundException e) {
+            throw new PersistenceException("Product file could not be loaded into memory", e);
+        }
         String[] productInfo;
         String productType;
         BigDecimal costPerSquareFoot;

@@ -1,6 +1,7 @@
 package com.mthree.floorMastery.dao;
 
 
+import com.mthree.floorMastery.exceptions.PersistenceException;
 import com.mthree.floorMastery.model.Product;
 import com.mthree.floorMastery.model.Tax;
 
@@ -16,8 +17,13 @@ public class FlooringMasterTaxDaoFileImpl implements FlooringMasterTaxDao {
     final String DELIMITER = ",";
 
     @Override
-    public void loadFile() throws FileNotFoundException {
-        Scanner sc = new Scanner(new BufferedReader(new FileReader(TAX_FILE)));
+    public void loadFile() throws PersistenceException {
+        Scanner sc;
+        try {
+            sc = new Scanner(new BufferedReader(new FileReader(TAX_FILE)));
+        } catch (FileNotFoundException e) {
+            throw new PersistenceException("Tax file could not be loaded into memory.", e);
+        }
         String[] taxInfo;
         String stateShort;
         String stateLong;

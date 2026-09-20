@@ -27,15 +27,24 @@ public class FlooringMasterView {
         return selection;
     }
 
-    public LocalDate getDateInput(){
+    public LocalDate getDateInput(boolean needsToBeFuture){
         LocalDate date = io.readDate("Please enter a date", "MM/dd/yyyy");
+        boolean dateIsFuture = false;
+        while (needsToBeFuture && !dateIsFuture) {
+            if (date.isBefore(LocalDate.now())) {
+                io.print("Input Invalid: Please enter a future date");
+                date = io.readDate("Please enter a future date", "MM/dd/yyyy");
+            } else {
+                dateIsFuture = true;
+            }
+        }
         return date;
     }
 
     public void displayOrders(List<Order> orders) {
         for (Order o : orders) {
             io.print("Order Number " + o.getOrderNumber() + ": ");
-            io.print("customerName=" + o.getCustomerName());
+            io.print("customer Name: " + o.getCustomerName());
             io.print("State: " + o.getState());
             io.print("Tax Rate: " + o.getTaxRate());
             io.print("Product Type: " + o.getProductType());
@@ -57,7 +66,21 @@ public class FlooringMasterView {
 
     public void displayOrderInfo(Order order){
         if (order != null) {
-            io.print(order.toString());
+            io.print("Order Found!");
+            io.print("------------");
+            io.print("Order Number " + order.getOrderNumber() + ": ");
+            io.print("customer Name: " + order.getCustomerName());
+            io.print("State: " + order.getState());
+            io.print("Tax Rate: " + order.getTaxRate());
+            io.print("Product Type: " + order.getProductType());
+            io.print("Area: " + order.getArea());
+            io.print("Cost Per Square Foot: " + order.getCostPerSquareFoot());
+            io.print("Labor Cost Per Square Foot: " + order.getLaborCostPerSquareFoot());
+            io.print("Material Cost: " + order.getMaterialCost());
+            io.print("Labor Cost: " + order.getLaborCost());
+            io.print("Tax: " + order.getTax());
+            io.print("Total: " + order.getTotal());
+            io.print("------------");
         } else {io.print("Order not found");}
         io.readString("Please hit enter to continue");
     }
