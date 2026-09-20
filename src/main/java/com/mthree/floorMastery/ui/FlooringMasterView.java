@@ -23,7 +23,7 @@ public class FlooringMasterView {
         io.print("4. Remove an Order");
         io.print("5. Export All Data");
         io.print("6. Exit");
-        int selection = io.readInt("Please choose an option from 1-6", 1,6);
+        int selection = io.readInt("Please choose an option from 1-6: ", 1,6);
         return selection;
     }
 
@@ -32,11 +32,27 @@ public class FlooringMasterView {
         return date;
     }
 
-    public void displayOrders(List<Order> orders){
-        for (Order o : orders){
-            io.print(o.toString());
+    public void displayOrders(List<Order> orders) {
+        for (Order o : orders) {
+            io.print("Order Number " + o.getOrderNumber() + ": ");
+            io.print("customerName=" + o.getCustomerName());
+            io.print("State: " + o.getState());
+            io.print("Tax Rate: " + o.getTaxRate());
+            io.print("Product Type: " + o.getProductType());
+            io.print("Area: " + o.getArea());
+            io.print("Cost Per Square Foot: " + o.getCostPerSquareFoot());
+            io.print("Labor Cost Per Square Foot: " + o.getLaborCostPerSquareFoot());
+            io.print("Material Cost: " + o.getMaterialCost());
+            io.print("Labor Cost: " + o.getLaborCost());
+            io.print("Tax: " + o.getTax());
+            io.print("Total: " + o.getTotal());
+            io.print("------------");
+        }
+        if (orders.isEmpty()) {
+            io.print("No Orders Found");
         }
         io.readString("Please press enter to continue");
+
     }
 
     public void displayOrderInfo(Order order){
@@ -103,7 +119,10 @@ public class FlooringMasterView {
         io.print("These are the product currently on sale: ");
 
         for (Product p : products) {
-            io.print(p.toString());
+            io.print("Product Type: " + p.getProductType());
+            io.print("Material Cost per Square Foot: " + p.getCostPerSquareFoot());
+            io.print("Labour Cost per Square Foot: " + p.getLaborCostperSquareFoot());
+            io.print("----------------");
             productList.add(p.getProductType());
         }
 

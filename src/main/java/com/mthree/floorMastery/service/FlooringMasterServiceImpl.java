@@ -46,6 +46,9 @@ public class FlooringMasterServiceImpl implements FlooringMasterService {
         BigDecimal totalCost =  materialCost.add(labourCost).add(tax).setScale(2, BigDecimal.ROUND_HALF_UP);
         order.setMaterialCost(order.getArea());
 
+        order.setLaborCostPerSquareFoot(product.getLaborCostperSquareFoot());
+        order.setCostPerSquareFoot(product.getCostPerSquareFoot());
+        order.setTaxRate(state.getTaxRate());
         order.setMaterialCost(materialCost);
         order.setLaborCost(labourCost);
         order.setTax(tax);

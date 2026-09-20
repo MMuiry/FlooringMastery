@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
     LocalDate currentLoadedDate;
@@ -61,15 +62,8 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
         BigDecimal total;
         String[] orderInfo;
 
-
-        if (sc.hasNextLine()) {
-            sc.nextLine();
-        }
-
         while (sc.hasNextLine()) {
-            orderInfo = sc.nextLine().split(DELIMITER);
-            String line = sc.nextLine();
-            orderNumber = Integer.parseInt(orderInfo[0]);
+            orderInfo = sc.nextLine().split(Pattern.quote(DELIMITER));            orderNumber = Integer.parseInt(orderInfo[0]);
             customerName = orderInfo[1];
             state = orderInfo[2];
             taxRate = new BigDecimal(orderInfo[3]);
@@ -102,7 +96,6 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
 
     @Override
     public Order addOrder(LocalDate date, Order newOrder) throws IOException {
-
         currentLoadedDate = date;
         loadFromFile();
         int nextOrderNumber = getNextOrderNumber();
@@ -122,6 +115,7 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
 
     @Override
     public Order editOrder(LocalDate date, int orderNumber, Order modifiedOrder) throws IOException {
+        currentLoadedDate = date;
         loadFromFile();
         Order foundOrder = getOrder(date, orderNumber);
         if  (modifiedOrder.getCustomerName() != null) {
@@ -143,6 +137,7 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
 
     @Override
     public Order removeOrder(LocalDate date, int orderNumber) throws IOException {
+        currentLoadedDate = date;
         loadFromFile();
         Order foundOrder = orders.get(orderNumber);
         orders.remove(orderNumber);
@@ -152,6 +147,7 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
 
     @Override
     public List<Order> getOrders(LocalDate date) throws FileNotFoundException {
+        currentLoadedDate = date;
         loadFromFile();
         return new ArrayList<>(orders.values());
     }

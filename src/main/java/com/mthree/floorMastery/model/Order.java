@@ -78,6 +78,17 @@ public class Order {
         this.orderNumber = orderNumber;
     }
 
+    public void setLaborCostPerSquareFoot(BigDecimal laborCostPerSquareFoot){
+        this.laborCostPerSquareFoot = laborCostPerSquareFoot;
+    }
+     public void setTaxRate(BigDecimal taxRate){
+        this.taxRate = taxRate;
+    }
+
+    public void setCostPerSquareFoot(BigDecimal costPerSquareFoot){
+        this.costPerSquareFoot = costPerSquareFoot;
+    }
+
     //getters
     public int getOrderNumber(){
         return orderNumber;
