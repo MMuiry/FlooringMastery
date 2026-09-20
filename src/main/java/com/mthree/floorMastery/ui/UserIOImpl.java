@@ -68,7 +68,10 @@ public class UserIOImpl implements UserIO {
             } catch (Exception e) {
                 print("This is in an invalid format");
             }
+
         }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMddyyyy");
+        String formatted = usrResponse.format(formatter);
         return usrResponse;
     }
 

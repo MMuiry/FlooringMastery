@@ -6,7 +6,13 @@ import java.util.Objects;
 public class Tax {
     String state;
     String stateAbr;
-    String taxRate;
+    BigDecimal taxRate;
+
+    public Tax (String stateAbr,String state, BigDecimal taxRate) {
+        this.stateAbr = stateAbr;
+        this.state = state;
+        this.taxRate = taxRate;
+    }
 
     //Getters
     public String getState() {
@@ -17,7 +23,7 @@ public class Tax {
         return stateAbr;
     }
 
-    public String getTaxRate() {
+    public BigDecimal getTaxRate() {
         return taxRate;
     }
 

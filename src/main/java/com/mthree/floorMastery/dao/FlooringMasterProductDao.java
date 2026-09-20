@@ -9,5 +9,4 @@ import java.util.Map;
 public interface FlooringMasterProductDao {
     void loadFile() throws FileNotFoundException;
     List<Product> getAllProducts();
-
 }

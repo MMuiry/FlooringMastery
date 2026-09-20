@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!-- Bean definitions go here -->
+    <bean id="userIO" class="com.mthree.floorMastery.ui.UserIOImpl"/>
+
+    <bean id="view" class="com.mthree.floorMastery.ui.FlooringMasterView">
+        <constructor-arg ref="userIO"/>
+    </bean>
+
+    <bean id="orderDao"
+          class="com.mthree.floorMastery.dao.FlooringMasterOrderFileImpl"/>
+
+    <bean id="exportDao"
+          class="com.mthree.floorMastery.dao.FlooringMasterExportDaoFileImpl"/>
+
+    <bean id="taxDao"
+          class="com.mthree.floorMastery.dao.FlooringMasterTaxDaoFileImpl"/>
+
+    <bean id="productDao"
+          class="com.mthree.floorMastery.dao.FlooringMasterProductDaoFileImpl"/>
+
+    <bean id="serviceLayer"
+          class="com.mthree.floorMastery.service.FlooringMasterServiceImpl">
+        <constructor-arg ref="orderDao"/>
+        <constructor-arg ref="productDao"/>
+        <constructor-arg ref="taxDao"/>
+        <constructor-arg ref="exportDao"/>
+    </bean>
+
+    <bean id="controller"
+          class="com.mthree.floorMastery.controller.FlooringMasterController">
+        <constructor-arg ref="serviceLayer"/>
+        <constructor-arg ref="view"/>
+    </bean>
+
+</beans>

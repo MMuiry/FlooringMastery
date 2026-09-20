@@ -17,11 +17,29 @@ public class Order {
     private BigDecimal tax;
     private BigDecimal total;
 
-    public Order(String customerName, String state, String productType, BigDecimal area) {
+    public Order(String customerName, String state, String productType,BigDecimal area){
         this.customerName = customerName;
         this.state = state;
         this.productType = productType;
         this.area = area;
+    }
+
+    public Order(Integer orderNumber, String customerName, String state, BigDecimal taxRate,
+                 String productType, BigDecimal area, BigDecimal costPerSquareFoot,
+                 BigDecimal laborCostPerSquareFoot, BigDecimal materialCost,
+                 BigDecimal laborCost, BigDecimal tax, BigDecimal total) {
+        this.orderNumber = orderNumber;
+        this.customerName = customerName;
+        this.state = state;
+        this.taxRate = taxRate;
+        this.productType = productType;
+        this.area = area;
+        this.costPerSquareFoot = costPerSquareFoot;
+        this.laborCostPerSquareFoot = laborCostPerSquareFoot;
+        this.materialCost = materialCost;
+        this.laborCost = laborCost;
+        this.tax = tax;
+        this.total = total;
     }
     //setters
     public void setCustomerName(String customerName) {
@@ -40,8 +58,28 @@ public class Order {
         this.area = area;
     }
 
+    public void setMaterialCost(BigDecimal materialCost){
+        this.materialCost = materialCost;
+    }
+
+    public void setLaborCost(BigDecimal laborCost){
+        this.laborCost = laborCost;
+    }
+
+    public void setTax(BigDecimal tax){
+        this.tax = tax;
+    }
+
+    public void setTotal(BigDecimal total){
+        this.total = total;
+    }
+
+    public void  setOrderNumber(Integer orderNumber){
+        this.orderNumber = orderNumber;
+    }
+
     //getters
-    public int getOrderNumber(int orderNumber){
+    public int getOrderNumber(){
         return orderNumber;
     }
 

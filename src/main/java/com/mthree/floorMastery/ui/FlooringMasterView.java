@@ -9,9 +9,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class flooringMasterView {
+public class FlooringMasterView {
     private UserIO io;
 
+    public FlooringMasterView(UserIO io) {
+        this.io = io;
+    }
     public int displayMainMenuAndGetSelection(){
         io.print("Main Menu");
         io.print("1. Display Orders");
@@ -33,10 +36,14 @@ public class flooringMasterView {
         for (Order o : orders){
             io.print(o.toString());
         }
+        io.readString("Please press enter to continue");
     }
 
     public void displayOrderInfo(Order order){
-        io.print(order.toString());
+        if (order != null) {
+            io.print(order.toString());
+        } else {io.print("Order not found");}
+        io.readString("Please hit enter to continue");
     }
 
 
@@ -65,7 +72,7 @@ public class flooringMasterView {
 
     private String getAndValidateState(List<Tax> taxes, boolean allowBlank) {
         String state = "";
-        Boolean valid =  false;
+        boolean valid =  false;
         List<String> stateList = new ArrayList<>();
         io.print("These are the States we sell too");
 
@@ -166,10 +173,20 @@ public class flooringMasterView {
         io.print("ORDER HAS BEEN EDITED SUCCESSFULLY");
     }
 
+    public void displayRemoveOrderSuccess(Order removedOrder) {
+        if (removedOrder != null) {
+        io.print("ORDER HAS BEEN DELETED SUCCESSFULLY");
+        } else {io.print("ORDER NOT FOUND, NOTHING HAS BEEN DELETED");}
+    }
+
+
     public void displayExportDataSuccess() {
         io.print("ORDER HAS BEEN EXPORTED SUCCESSFULLY");
     }
 
+    public void displayOrderBanner() {
+        io.print("=== DISPLAYING ORDERS ===");
+    }
     public void displayAddOrderBanner() {
         io.print("=== ADD ORDER ===");
     }
