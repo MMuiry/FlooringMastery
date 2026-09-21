@@ -12,7 +12,7 @@ import java.util.List;
 public interface FlooringMasterOrderDao {
         void writeToFile() throws PersistenceException;
         void loadFromFile() throws PersistenceException;
-        int getNextOrderNumber();
+        int getNextOrderNumber(boolean increase);
         Order addOrder(LocalDate date, Order newOrder) throws PersistenceException;
         Order getOrder(LocalDate date, int orderNumber ) throws PersistenceException;
         Order editOrder(LocalDate date, int orderNumber, Order modifiedOrder) throws PersistenceException;

@@ -17,8 +17,10 @@ public class Order {
     private BigDecimal tax;
     private BigDecimal total;
 
+    //needed to have multiple constructors as depending on the Order being created, it might not have all the needed values yet
     public Order(){
     }
+
     public Order(String customerName, String state, String productType,BigDecimal area){
         this.customerName = customerName;
         this.state = state;

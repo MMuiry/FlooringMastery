@@ -16,6 +16,11 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
     LocalDate currentLoadedDate;
     TreeMap<Integer, Order> orders = new TreeMap<>();
     String DELIMITER = "||";
+    int maxOrderNumber;
+
+    public FlooringMasterOrderFileImpl() {
+        getMaxOrderNumber();
+    }
 
     //writes the memory in order to file
     @Override
@@ -118,18 +123,59 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
         sc.close();
     }
 
-    //gets next order number
-    @Override
-    public int getNextOrderNumber(){
+    //gets the highest ordernumber
+    public void getMaxOrderNumber() {
+        File folder = new File("Orders");
+        File[] orderFiles = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".txt"));
 
-        //if first order in file, return 1
-        if (orders.isEmpty()) {
-            return 1;
+        //checks if there any files
+        if (orderFiles != null) {
+
+            //goes through each file to find the highest value of ordernumber
+            for (File file : orderFiles) {
+
+                try (Scanner sc = new Scanner(new BufferedReader(new FileReader(file)))) {
+                    if (sc.hasNextLine()) {
+                        sc.nextLine();
+                    }
+
+                    while (sc.hasNextLine()) {
+                        String line = sc.nextLine();
+                        String[] fields = line.split(Pattern.quote(DELIMITER));
+                        int orderNumber = Integer.parseInt(fields[0]);
+
+                        if (orderNumber > maxOrderNumber) {
+                            maxOrderNumber = orderNumber;
+                        }
+
+                    }
+                } catch (IOException e) {
+                    continue;
+                }
+
+            }
+        } else  {
+            maxOrderNumber = 0;
         }
 
-        //else +1 to last entered order
-        int lastOrderNum = orders.lastKey() + 1;
-        return lastOrderNum;
+    }
+
+    //gets next order number
+    @Override
+    public int getNextOrderNumber(boolean increase){
+
+        //if first order in file, return 1
+//        if (orders.isEmpty()) {//            return 1;
+//        }
+//
+//        //else +1 to last entered order
+//        int lastOrderNum = orders.lastKey() + 1;
+//        return lastOrderNum;
+        if (increase) {
+            return ++maxOrderNumber;
+        }else  {
+            return maxOrderNumber + 1;
+        }
     }
 
     //loads order from file if exists, adds order to memory then calls the write or overwrite the old file with new version
@@ -137,7 +183,7 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
     public Order addOrder(LocalDate date, Order newOrder) throws PersistenceException {
         currentLoadedDate = date;
         loadFromFile();
-        int nextOrderNumber = getNextOrderNumber();
+        int nextOrderNumber = getNextOrderNumber(true);
         newOrder.setOrderNumber(nextOrderNumber);
         orders.put(nextOrderNumber, newOrder);
         writeToFile();

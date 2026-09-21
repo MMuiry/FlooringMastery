@@ -56,7 +56,7 @@ class FlooringMasterServiceImplTest {
 
         when(productDao.getAllProducts()).thenReturn(List.of(tile));
         when(taxDao.getAllTaxes()).thenReturn(List.of(texas));
-        when(orderDao.getNextOrderNumber()).thenReturn(1);
+        when(orderDao.getNextOrderNumber(false)).thenReturn(1);
         when(orderDao.addOrder(any(), any())).thenAnswer(inv -> inv.getArgument(1));
 
         Order newOrder = new Order("John Snow", "Texas", "Tile", new BigDecimal("250.00"));

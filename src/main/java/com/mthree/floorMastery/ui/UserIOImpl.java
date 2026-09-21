@@ -8,6 +8,8 @@ import java.util.Scanner;
 public class UserIOImpl implements UserIO {
     public static Scanner sc = new Scanner(System.in);
 
+    //This will get specific data types
+
     public void print(String prompt) {
         System.out.println(prompt);
     }
@@ -70,34 +72,9 @@ public class UserIOImpl implements UserIO {
             }
 
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMddyyyy");
-        String formatted = usrResponse.format(formatter);
         return usrResponse;
     }
 
-    @Override
-    public BigDecimal readBigDecimal(String prompt) {
-        BigDecimal usrResponse = null;
-        boolean validInput = false;
-
-        while (!validInput) {
-            if (!sc.hasNextBigDecimal()) {
-                print("Wrong Type: Please enter positive number (rounded up at 2 decimal spaces)");
-                sc.nextLine();
-                continue;
-            }
-            usrResponse = sc.nextBigDecimal();
-            if (usrResponse.compareTo(BigDecimal.ZERO) <= 0) {
-                print("This is a invalid negative number");
-                continue;
-            }
-            validInput = true;
-        }
-
-        sc.nextLine();
-
-        return usrResponse.setScale(2, RoundingMode.HALF_UP);
-    }
 
     @Override
     public BigDecimal readBigDecimal(String prompt, double minimumDouble, boolean allowBlank) {
@@ -112,7 +89,7 @@ public class UserIOImpl implements UserIO {
 
             try {
                 BigDecimal usrResponse = new BigDecimal(input);
-                if (usrResponse.compareTo(minBD) <= 0) {
+                if (usrResponse.compareTo(minBD) < 0) {
                     print("This is an invalid number below the minimum of " + minimumDouble);
                     continue;
                 }

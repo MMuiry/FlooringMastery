@@ -15,8 +15,6 @@ public interface UserIO {
 
     LocalDate readDate(String prompt, String format);
 
-    BigDecimal readBigDecimal(String prompt);
-
     BigDecimal readBigDecimal(String prompt, double  minimum, boolean allowBlank);
 
     boolean readBoolean(String prompt);

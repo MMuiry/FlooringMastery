@@ -71,14 +71,14 @@ class FlooringMasterOrderFileImplTest {
 
     @Test
     void getNextOrderNumber_returnsOneWhenEmpty() {
-        assertEquals(1, dao.getNextOrderNumber());
+        assertEquals(1, dao.getNextOrderNumber(false));
     }
 
     @Test
     void getNextOrderNumber_returnsMaxPlusOne() {
         dao.orders.put(4, new Order());
         dao.orders.put(2, new Order());
-        assertEquals(5, dao.getNextOrderNumber());
+        assertEquals(5, dao.getNextOrderNumber(true));
     }
 
     @Test
@@ -94,16 +94,13 @@ class FlooringMasterOrderFileImplTest {
     @Test
     void getOrder_returnsMatchingOrder() throws Exception {
         writeKnownData("1||John Snow||Texas||4.45||Tile||250.00||3.50||4.15||875.00||1037.50||85.06||1997.56");
-
         Order result = dao.getOrder(testDate, 1);
-
         assertEquals("John Snow", result.getCustomerName());
     }
 
     @Test
     void getOrder_throwsWhenNotFound() throws Exception {
         writeKnownData("1||John Snow||Texas||4.45||Tile||250.00||3.50||4.15||875.00||1037.50||85.06||1997.56");
-
         assertThrows(NoSuchOrderException.class, () -> dao.getOrder(testDate, 99));
     }
 

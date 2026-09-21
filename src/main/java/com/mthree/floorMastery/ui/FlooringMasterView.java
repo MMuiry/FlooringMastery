@@ -15,6 +15,8 @@ public class FlooringMasterView {
     public FlooringMasterView(UserIO io) {
         this.io = io;
     }
+
+    //displays menu and gets selection
     public int displayMainMenuAndGetSelection(){
         io.print("Main Menu");
         io.print("1. Display Orders");
@@ -27,21 +29,28 @@ public class FlooringMasterView {
         return selection;
     }
 
+    //gets date input from user, has an option to require date to be in future as its required for adding new orders
     public LocalDate getDateInput(boolean needsToBeFuture){
         LocalDate date = io.readDate("Please enter a date", "MM/dd/yyyy");
         boolean dateIsFuture = false;
+
         while (needsToBeFuture && !dateIsFuture) {
+
             if (date.isBefore(LocalDate.now())) {
                 io.print("Input Invalid: Please enter a future date");
                 date = io.readDate("Please enter a future date", "MM/dd/yyyy");
             } else {
                 dateIsFuture = true;
             }
+
         }
+
         return date;
     }
 
+    //displays all orders given
     public void displayOrders(List<Order> orders) {
+
         for (Order o : orders) {
             io.print("Order Number " + o.getOrderNumber() + ": ");
             io.print("customer Name: " + o.getCustomerName());
@@ -57,14 +66,18 @@ public class FlooringMasterView {
             io.print("Total: " + o.getTotal());
             io.print("------------");
         }
+
         if (orders.isEmpty()) {
             io.print("No Orders Found");
         }
+
         io.readString("Please press enter to continue");
 
     }
 
+    //displays OrderInfo
     public void displayOrderInfo(Order order){
+
         if (order != null) {
             io.print("Order Found!");
             io.print("------------");
@@ -82,33 +95,38 @@ public class FlooringMasterView {
             io.print("Total: " + order.getTotal());
             io.print("------------");
         } else {io.print("Order not found");}
-        io.readString("Please hit enter to continue");
+
     }
 
 
-
+    //gets the order number input
     public int getOrderNumberInput() {
         int orderNum = io.readInt("Enter order number");
         return orderNum;
     }
 
+    //gets and validates customer name, allows blanks to be toggled for edit
     private String getAndValidateCustomerName(boolean allowBlank) {
         boolean valid = false;
         String customerName = "";
         while (!valid) {
             customerName = io.readString("Please enter customer name: ");
+
             if (allowBlank && customerName.isBlank()) {
                 return null;
             }
+
             if (!customerName.isBlank() && customerName.matches("^[a-zA-Z0-9.,\\s]+$")) {
                 valid = true;
             } else {
                 io.print("Invalid name: cannot be blank, and can only contain letters, numbers, periods, and commas.");
             }
+
         }
         return customerName;
     }
 
+    //gets and validates state name, allows blanks to be toggled for edit
     private String getAndValidateState(List<Tax> taxes, boolean allowBlank) {
         String state = "";
         boolean valid =  false;
@@ -122,19 +140,23 @@ public class FlooringMasterView {
 
         while (!valid) {
             state = io.readString("Please enter state: ");
+
             if (allowBlank && state.isBlank()) {
                 return null;
             }
             final String currentState = state;
             valid = stateList.stream().anyMatch(s -> s.equalsIgnoreCase(currentState));
+
             if (!valid) {
                 io.print("Invalid State, if input is not one of the above, we cannot sell there");
             }
+
         }
+
         return state;
     }
 
-
+    //gets and validates Product type, allows blanks to be toggled for edit
     private String getAndValidateProductType(List<Product> products, boolean allowBlank) {
         String productType = "";
         boolean valid = false;
@@ -151,24 +173,29 @@ public class FlooringMasterView {
 
         while (!valid) {
             productType = io.readString("Please select one of these products: ");
+
             if (allowBlank && productType.isBlank()) {
                 return null;
             }
             final String currentProductType = productType;
             valid = productList.stream().anyMatch(s -> s.equalsIgnoreCase(currentProductType));
+
             if (!valid) {
                 io.print("Invalid product, please check spelling");
             }
+
         }
+
         return productType;
     }
 
+    //gets and validates customer name, allows blanks to be toggled for edit
     private BigDecimal getAndValidateArea(boolean allowBlank) {
         BigDecimal area = io.readBigDecimal("Please enter sq feet area (minimum 100): ", 100, allowBlank);
         return area;
     }
 
-
+    //gets add order information, the rest of the fields are calculated so just needs the 4 fields
     public Order getAddOrderInput(List<Tax> taxes, List<Product> products) {
         String customerName = getAndValidateCustomerName(false);
         String state = getAndValidateState(taxes, false);
@@ -176,9 +203,15 @@ public class FlooringMasterView {
         BigDecimal area = getAndValidateArea(false);
         Order newOrder = new Order(customerName, state, productType, area);
 
+        io.print("Customer Name : " + customerName);
+        io.print("State : " + state);
+        io.print("Product Type : " + productType);
+        io.print("Area : " + area);
+
         return newOrder;
     }
 
+    //gets the information needed to edit order
     public Order getEditOrderInput(List<Tax> taxes, List<Product> products) {
         String customerName = getAndValidateCustomerName(true);
         String state = getAndValidateState(taxes, true);
@@ -189,19 +222,20 @@ public class FlooringMasterView {
         return newOrder;
     }
 
+    //gets confirmaiton from user, used for edit/adding/removing data
     public boolean getConfirmation(){
         boolean usrChoice = io.readBoolean("Would you like to continue? (yes/no): ");
         return usrChoice;
     }
 
-
+    //displays error message
     public void displayErrorMessage(String errorMessage) {
         io.print("=== ERROR ===");
         io.print(errorMessage);
     }
-    public void getDisplayUnknownCommandMessage() {
-        io.print("Please enter a valid command");
-    }
+
+    //--------
+    //Visual additions that arn't dynamic
 
     public void displayExitMessage() {
         io.print("Goodbye!");

@@ -112,6 +112,7 @@ public class FlooringMasterController {
         LocalDate date = view.getDateInput(false);
         int orderNumber = view.getOrderNumberInput();
         Order orderToRemove = service.getOrder(date,orderNumber);
+        view.displayOrderInfo(orderToRemove);
         boolean usrConfirmed = view.getConfirmation();
 
         if (usrConfirmed) {
