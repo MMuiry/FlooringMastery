@@ -16,11 +16,13 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
     LocalDate currentLoadedDate;
     TreeMap<Integer, Order> orders = new TreeMap<>();
     String DELIMITER = "||";
-    @Override
 
+    //writes the memory in order to file
+    @Override
     public void writeToFile() throws PersistenceException {
         File ordersDir = new File("Orders");
 
+        //creates directory if needed
         if (!ordersDir.exists()) {
             ordersDir.mkdirs();
         }
@@ -29,6 +31,7 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
         final String ORDER_FILE = "Orders/Orders_" + currentLoadedDate.format(formatter) + ".txt";
         PrintWriter out;
 
+        //creates file
         try {
             out = new PrintWriter(new FileWriter(ORDER_FILE));
         } catch (IOException e) {
@@ -38,6 +41,7 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
         String currentLine;
         out.println("OrderNumber||CustomerName||State||TaxRate||ProductType||Area||CostPerSquareFoot||LaborCostPerSquareFoot||MaterialCost||LaborCost||Tax||Total");
 
+        //converts data to formatted string
         for (Order o: orders.values()) {
             currentLine = o.getOrderNumber() + "||" + o.getCustomerName() + "||"
                     + o.getState() + "||" + o.getTaxRate() + "||"
@@ -48,9 +52,11 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
                     out.println(currentLine);
         }
 
+        //outputs buffer to file
         out.close();
     }
 
+    //loads orders from a single date to memory
     @Override
     public void loadFromFile() throws PersistenceException {
         orders = new TreeMap<>();
@@ -83,10 +89,12 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
         BigDecimal total;
         String[] orderInfo;
 
+        //skips header
         if  (sc.hasNextLine()) {
             sc.nextLine();
         }
 
+        //reads in data from file to memory
         while (sc.hasNextLine()) {
             orderInfo = sc.nextLine().split(Pattern.quote(DELIMITER));            orderNumber = Integer.parseInt(orderInfo[0]);
             customerName = orderInfo[1];
@@ -110,17 +118,21 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
         sc.close();
     }
 
+    //gets next order number
     @Override
     public int getNextOrderNumber(){
 
+        //if first order in file, return 1
         if (orders.isEmpty()) {
             return 1;
         }
 
+        //else +1 to last entered order
         int lastOrderNum = orders.lastKey() + 1;
         return lastOrderNum;
     }
 
+    //loads order from file if exists, adds order to memory then calls the write or overwrite the old file with new version
     @Override
     public Order addOrder(LocalDate date, Order newOrder) throws PersistenceException {
         currentLoadedDate = date;
@@ -132,6 +144,7 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
         return newOrder;
     }
 
+    //will return a single order
     @Override
     public Order getOrder(LocalDate date, int orderNumber) throws NoSuchOrderException, PersistenceException {
         currentLoadedDate = date;
@@ -145,12 +158,14 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
         return foundOrder;
     }
 
+    //will edit order
     @Override
     public Order editOrder(LocalDate date, int orderNumber, Order modifiedOrder) throws PersistenceException {
         currentLoadedDate = date;
         loadFromFile();
         Order foundOrder = getOrder(date, orderNumber);
 
+        //if left blank, it will not change it, if not left blank will update the memory of that order and write to file
         if  (modifiedOrder.getCustomerName() != null) {
             foundOrder.setCustomerName(modifiedOrder.getCustomerName());
         }
@@ -171,6 +186,7 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
         return foundOrder;
     }
 
+    //Loads file, removes from memory, writes to file.
     @Override
     public Order removeOrder(LocalDate date, int orderNumber) throws NoSuchOrderException, PersistenceException {
         currentLoadedDate = date;
@@ -186,6 +202,7 @@ public class FlooringMasterOrderFileImpl implements FlooringMasterOrderDao {
         return foundOrder;
     }
 
+    //loads order, returns an array of all order in memory
     @Override
     public List<Order> getOrders(LocalDate date) throws PersistenceException {
         currentLoadedDate = date;

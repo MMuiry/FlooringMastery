@@ -14,14 +14,17 @@ public class FlooringMasterProductDaoFileImpl implements FlooringMasterProductDa
     final String PRODUCT_FILE = "Products.txt" ;
     final String DELIMITER = ",";
 
+    //Loads product file to memory
     @Override
     public void loadFile() throws PersistenceException {
         Scanner sc;
+
         try {
             sc = new Scanner(new BufferedReader(new FileReader(PRODUCT_FILE)));
         } catch (FileNotFoundException e) {
             throw new PersistenceException("Product file could not be loaded into memory", e);
         }
+
         String[] productInfo;
         String productType;
         BigDecimal costPerSquareFoot;
@@ -30,11 +33,14 @@ public class FlooringMasterProductDaoFileImpl implements FlooringMasterProductDa
         if (sc.hasNextLine()) {
             sc.nextLine();
         }
+
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
+
             if (line.isBlank()) {
                 continue;
             }
+
             productInfo = line.split(DELIMITER);
             productType = productInfo[0];
             costPerSquareFoot = new BigDecimal(productInfo[1]);
@@ -42,9 +48,11 @@ public class FlooringMasterProductDaoFileImpl implements FlooringMasterProductDa
             Product currentProduct =  new Product(productType,costPerSquareFoot,laborCostperSquareFoot);
             allProducts.put(productType,currentProduct);
         }
+
         sc.close();
     }
 
+    //returns all products in memory
     @Override
     public List<Product> getAllProducts() {
         return new ArrayList<>(allProducts.values());

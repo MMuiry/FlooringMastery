@@ -16,14 +16,17 @@ public class FlooringMasterTaxDaoFileImpl implements FlooringMasterTaxDao {
     final String TAX_FILE = "Taxes.txt" ;
     final String DELIMITER = ",";
 
+    //loads tax info from a file to memory
     @Override
     public void loadFile() throws PersistenceException {
         Scanner sc;
+
         try {
             sc = new Scanner(new BufferedReader(new FileReader(TAX_FILE)));
         } catch (FileNotFoundException e) {
             throw new PersistenceException("Tax file could not be loaded into memory.", e);
         }
+
         String[] taxInfo;
         String stateShort;
         String stateLong;
@@ -32,11 +35,14 @@ public class FlooringMasterTaxDaoFileImpl implements FlooringMasterTaxDao {
         if (sc.hasNextLine()) {
             sc.nextLine();
         }
+
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
+
             if (line.isBlank()) {
                 continue;
             }
+
             taxInfo = line.split(DELIMITER);
             stateShort = taxInfo[0];
             stateLong = taxInfo[1];
@@ -44,9 +50,11 @@ public class FlooringMasterTaxDaoFileImpl implements FlooringMasterTaxDao {
             Tax currentTax =  new Tax(stateShort,stateLong,taxRate);
             allTaxes.put(stateShort,currentTax);
         }
+
         sc.close();
     }
 
+    //returns the tax info in memory
     @Override
     public List<Tax> getAllTaxes() {
         return new ArrayList<>(allTaxes.values());
